@@ -1,7 +1,7 @@
 .data
-vec1: .word 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-vec2: .word 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-size: .word 10
+vec1: .word -35, 88, -100, -81, -4, 97, 11, -39, 90, -2, -30, 2, 69, -56, -90, -41, -56, -91, -24, 95, 55, 50, 50, 27, 75, -80, -41, -33, -76, 74, -78, -17, 88, 21, 84, -27, 76, -49, -53, 22, 66, -79, -17, 73, 55, -62, -70, 29, -40, 3610
+vec2: .word -14, 1, 44, -88, 17, 7, 38, -33, -36, -88, 75, -12, 88, -38, 45, -63, -78, 22, 64, 93, 81, -98, -92, -31, -10, -55, -57, 97, 56, -73, 66, 35, 33, 79, -95, -70, 0, 66, -77, -91, 2, 93, -98, 45, 75, -68, -29, -88, 78, -38
+size: .word 50
 
 .text
 la $t3, size # $t0 = &size
@@ -29,8 +29,29 @@ addi $s2, $s2, 4 #&s2 += offset(4)
 #============================
 #############################
 
+bgez $t1, REG_FLOW #if $t1 >= 0 jump to Reg Flow
 
+# now case 3(t1= - and t2= +) or case 4(t1= - and t2= -)
+
+bgez $t2, SWAP #if t2 >= 0 jumpt to case3 else fall through
+#if we fall through BOTH are -
+sub $t1, $zero, $t1      # $t1 = 0 - $t1 (make +)
+sub $t2, $zero, $t2      # $t2 = 0 - $t2 (make +)
+j REG_FLOW#jump to reg flow
+
+SWAP:
+#swap
+add $t3, $zero, $t1      # temp = $t1
+add $t1, $zero, $t2      # $t1 = $t2  
+add $t2, $zero, $t3     # $t2 = temp
+
+REG_FLOW:
+#############################
+#============================
 # BACK TO NORMAL LOOP
+#============================
+#############################
+
 addi $t0, $zero, 0 #value_iter = 0; how many tiems we hace added to our self
 ADDER_LOOP:
 beq $t0, $t1, ELEMENT_LOOP # branch to ELEMENT_LOOP of value_iter == value of vec1[i]
